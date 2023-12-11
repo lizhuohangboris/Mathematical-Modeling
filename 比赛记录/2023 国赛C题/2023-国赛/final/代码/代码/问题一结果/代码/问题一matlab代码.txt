@@ -1,0 +1,26 @@
+% 读取数据，假设数据文件名为 'sales_data.csv'
+data = readtable('sales_data.csv');
+
+% 数据预处理
+data.销售日期 = datetime(data.销售日期, 'InputFormat', 'yyyy-MM-dd');
+
+% 按品类汇总销售量
+category_sales = varfun(@sum, data, 'GroupingVariables', '品类', 'InputVariables', '销量千克');
+
+% 绘制蔬菜品类销售量分布图
+figure;
+bar(category_sales.品类, category_sales.Fun_sales千克);
+title('蔬菜品类销售量分布');
+xlabel('品类');
+ylabel('销量(千克)');
+
+% 分析单品销售量分布（假设要分析品类A的单品销售量）
+category_A_data = data(data.品类 == '品类A', :);
+single_item_sales = varfun(@sum, category_A_data, 'GroupingVariables', '单品编码', 'InputVariables', '销量千克');
+
+% 绘制品类A单品销售量分布图
+figure;
+bar(single_item_sales.单品编码, single_item_sales.Fun_sales千克);
+title('品类A单品销售量分布');
+xlabel('单品编码');
+ylabel('销量(千克)');

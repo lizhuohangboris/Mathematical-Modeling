@@ -1,0 +1,23 @@
+% 数据预处理的示例代码
+
+% 1. 加载数据
+data = csvread('input_data.csv'); % 假设CSV文件中没有列名，并且只包含数值数据
+
+% 2. 缺失值处理（这里简单地用每列的均值填充缺失值）
+nanCols = any(isnan(data), 1);
+colMeans = mean(data, 'omitnan');
+data(:, nanCols) = fillmissing(data(:, nanCols), 'constant', colMeans);
+
+% 3. 数据归一化
+minVals = min(data, [], 1);
+maxVals = max(data, [], 1);
+data_normalized = (data - minVals) ./ (maxVals - minVals);
+
+% 4. 数据标准化
+meanVals = mean(data, 1);
+stdVals = std(data, 0, 1);
+data_standardized = (data - meanVals) ./ stdVals;
+
+% 5. 保存预处理后的数据到新的CSV文件
+csvwrite('preprocessed_data_normalized.csv', data_normalized);
+csvwrite('preprocessed_data_standardized.csv', data_standardized);

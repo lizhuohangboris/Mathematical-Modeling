@@ -1,0 +1,37 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+# 假设数据文件名为 'sales_data.csv'
+data = pd.read_csv('sales_data.csv')
+
+
+# 删除不需要的列
+data = data.drop(columns=['扫码销售时间'])
+
+# 转换销售日期列为日期时间格式
+data['销售日期'] = pd.to_datetime(data['销售日期'])
+
+# 可以按需要进行其他数据清洗和处理
+
+category_sales = data.groupby('品类')['销量(千克)'].sum()
+
+
+category_sales.plot(kind='bar', figsize=(10, 6))
+plt.title('蔬菜品类销售量分布')
+plt.xlabel('品类')
+plt.ylabel('销量(千克)')
+plt.show()
+
+
+# 假设你想分析某一个品类的单品销售量分布，比如品类A
+category_A_data = data[data['品类'] == '品类A']
+single_item_sales = category_A_data.groupby('单品编码')['销量(千克)'].sum()
+
+# 绘制单品销售量分布图
+single_item_sales.plot(kind='bar', figsize=(12, 6))
+plt.title('品类A单品销售量分布')
+plt.xlabel('单品编码')
+plt.ylabel('销量(千克)')
+plt.show()
+
