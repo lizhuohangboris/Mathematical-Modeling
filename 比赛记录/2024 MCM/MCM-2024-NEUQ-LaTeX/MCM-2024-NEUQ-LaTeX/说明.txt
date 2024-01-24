@@ -1,0 +1,25 @@
+该模板包括两个主要文件和两个文件夹。
+
+1、两个主要文件：
+mcmthesis.cls是美赛论文类；
+main.tex是主文件，在WinEdt或TeXworks编辑器窗口, 用PDFLaTeX或XeLaTeX运行。
+（1）修改控制号、题号：
+打开主文件，找到如下命令修改。
+     \mcmsetup{
+            tcn = JS06012023001, problem = A,        %% tcn is team control number
+            titleinsummary = true,             %% title appears on summary sheet
+                        }     
+（2）比赛年份：latex命令自动生成正确年份，不必修改。
+
+！！！注意！！！
+main.tex主文件建议用WinEdt打开，若仍有问题，请用TeXworks编辑器打开，按如下操作：
+开始->所有程序->CTeX->MiKTeX->TeXworks，在弹出的窗口菜单打开主文件，
+可在TeXworks窗口运行，亦可将其全部拷至WinEdt窗口保存运行。
+main.tex主文件内含有中文说明，若显示有乱码，是由UTF-8编码所致，解决方案：
+（1）在WinEdt将编码改为TeX，关掉WinEdt, 重新打开；
+（2）在TeXworks中，编辑->首选项->编辑器->编码，把UTF-8改为System字体, 关掉TeXwork, 重新打开。
+
+2、两个文件夹：
+code文件夹用于存放程序；
+figures文件夹用于存放图片，pdfLaTeX插入图片支持pdf、jpg、png等格式,
+eps格式的图片会自动转换为pdf格式的插入文档。

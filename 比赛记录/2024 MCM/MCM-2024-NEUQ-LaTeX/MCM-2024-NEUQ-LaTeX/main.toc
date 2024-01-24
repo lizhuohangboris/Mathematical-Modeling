@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Problem Background and Related Research Overview}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Problem Background}{1}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Related Work}{1}{subsection.1.2}
+\contentsline {section}{\numberline {2}Assumptions and Data Preprocessing}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Assumptions}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Data Preprocessing}{2}{subsection.2.2}
+\contentsline {section}{\numberline {3}Exploratory Data Analysis}{2}{section.3}
+\contentsline {section}{\numberline {4}Machine Learning Methods for Classification}{3}{section.4}
+\contentsline {section}{\numberline {5}Simulation Result and Model evaluation}{4}{section.5}
+\contentsline {section}{\numberline {6}Conclusion}{5}{section.6}
+\contentsline {section}{References}{5}{section.6}
+\contentsline {section}{Appendices}{5}{section*.2}
