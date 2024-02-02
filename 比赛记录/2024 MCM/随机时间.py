@@ -27,44 +27,35 @@ df[target] = le.fit_transform(df[target])
 train_size = 0.7
 train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 
-# Train Random Forest model
+# Train Random Forest model on the first 70% of data
 rf_model = RandomForestClassifier(random_state=42)
 rf_model.fit(train[features], train[target])
 
-# Train XGBoost model
+# Use Random Forest model for predictions on the entire dataset
+df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 1]
+
+# Train XGBoost model on the first 70% of data
 xg_model = XGBClassifier(random_state=42)
 xg_model.fit(train[features], train[target])
 
-# Predict on the test set
-test['predicted_prob_rf'] = rf_model.predict_proba(test[features])[:, 1]
-test['predicted_prob_xg'] = xg_model.predict_proba(test[features])[:, 1]
-
-# Predict on the train set
-train['predicted_prob_rf'] = rf_model.predict_proba(train[features])[:, 1]
-train['predicted_prob_xg'] = xg_model.predict_proba(train[features])[:, 1]
+# Use XGBoost model for predictions on the entire dataset
+df['xg_predictions'] = xg_model.predict_proba(df[features])[:, 1]
 
 # Inverse transform 'point_victor' for interpretation
-test['point_victor'] = le.inverse_transform(test['point_victor'])
-train['point_victor'] = le.inverse_transform(train['point_victor'])
+df['point_victor'] = le.inverse_transform(df['point_victor'])
 
 # Sort DataFrame by 'elapsed_time' for time series plot
-test.sort_values('elapsed_time', inplace=True)
-train.sort_values('elapsed_time', inplace=True)
+df.sort_values('elapsed_time', inplace=True)
 
 # Plot the time series of predicted probabilities for Random Forest
 plt.figure(figsize=(10, 6))
-plt.plot(test['elapsed_time'], test['predicted_prob_rf'], label='RF Test Predicted Probability', linestyle='dashed', color='blue')
-plt.xlabel('Elapsed Time')
-plt.ylabel('Predicted Probability')
-plt.title('Time Series of Predicted Probability (Random Forest)')
-plt.legend()
-plt.show()
+plt.plot(df['elapsed_time'], df['rf_predictions'], label='RF Predicted Probability', linestyle='dashed', color='skyblue')
 
 # Plot the time series of predicted probabilities for XGBoost
-plt.figure(figsize=(10, 6))
-plt.plot(test['elapsed_time'], test['predicted_prob_xg'], label='XG Test Predicted Probability', linestyle='dashed', color='red')
+plt.plot(df['elapsed_time'], df['xg_predictions'], label='XG Predicted Probability', linestyle='dashed', color='salmon')
+
 plt.xlabel('Elapsed Time')
 plt.ylabel('Predicted Probability')
-plt.title('Time Series of Predicted Probability (XGBoost)')
+plt.title('Time Series of Predicted Probability')
 plt.legend()
 plt.show()
