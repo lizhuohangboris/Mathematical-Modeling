@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 # Load data from '数据处理.csv' with specific columns
 file_path = "c:/Users/92579/Documents/GitHub/Mathematical-Modeling/比赛记录/2024 MCM/美赛/2024_MCM-ICM_Problems/2024_MCM-ICM_Problems/数据处理.csv"
@@ -17,8 +18,7 @@ columns_to_read = ['match_id', 'player1', 'player2', 'elapsed_time', 'p1_sets', 
 df = pd.read_csv(file_path, usecols=columns_to_read)
 
 # Choose features and target variable
-features_rf = ['elapsed_time', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games', 'score_lead']
-features_xg = ['elapsed_time', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games', 'score_lead', 'rf_predictions']
+features = ['elapsed_time', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games']
 target = 'point_victor'
 
 # Convert 'elapsed_time' to string and then to timedelta
@@ -37,25 +37,17 @@ train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 
 # Train Random Forest model on the first 70% of data
 rf_model = RandomForestClassifier(random_state=42)
-rf_model.fit(train[features_rf], train[target])
-
-# ...
+rf_model.fit(train[features], train[target])
 
 # Use Random Forest model for predictions on the entire dataset
-df['rf_predictions'] = rf_model.predict_proba(df[features_rf])[:, 1]
+df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 1]
 
-# Add 'rf_predictions' column to the train dataset
-train['rf_predictions'] = rf_model.predict_proba(train[features_rf])[:, 1]
-
-# Train XGBoost model on the first 70% of data with 'score_lead' and 'rf_predictions'
+# Train XGBoost model on the first 70% of data
 xg_model = XGBClassifier(random_state=42)
-xg_model.fit(train[features_xg], train[target])
-
-# ...
-
+xg_model.fit(train[features], train[target])
 
 # Use XGBoost model for predictions on the entire dataset
-df['xg_predictions'] = xg_model.predict_proba(df[features_xg])[:, 1]
+df['xg_predictions'] = xg_model.predict_proba(df[features])[:, 1]
 
 # Inverse transform 'point_victor' for interpretation
 df['point_victor'] = le.inverse_transform(df['point_victor'])
@@ -63,31 +55,42 @@ df['point_victor'] = le.inverse_transform(df['point_victor'])
 # Sort DataFrame by 'elapsed_time' for time series plot
 df.sort_values('elapsed_time', inplace=True)
 
-# Plot the time series of predicted probabilities for Random Forest and XGBoost
-plt.figure(figsize=(15, 8))
+# Plot the time series of predicted probabilities for Random Forest
+plt.figure(figsize=(10, 6))
+plt.plot(df['elapsed_time'], df['rf_predictions'], label='RF Predicted Probability', linestyle='dashed', color='skyblue')
 
-# Subplot 1: Random Forest Predicted Probability and Original Data Points
-plt.subplot(2, 1, 1)
-plt.plot(df['elapsed_time'], df['rf_predictions'], label='RF Predicted Probability (Player 1)', linestyle='dashed', color='skyblue')
-plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - RF')
-plt.scatter(df['elapsed_time'], df['rf_predictions'], marker='o', s=5, color='blue', label='Predicted Points - RF')  # Blue points at predicted points
+# Plot the time series of predicted probabilities for XGBoost
+plt.plot(df['elapsed_time'], df['xg_predictions'], label='XG Predicted Probability', linestyle='dashed', color='salmon')
+
 plt.xlabel('Elapsed Time')
-plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
-plt.title('Random Forest - Time Series of Predicted Probability with Scatter Plot')
+plt.ylabel('Predicted Probability')
+plt.title('Time Series of Predicted Probability')
 plt.legend()
-
-# Subplot 2: XGBoost Predicted Probability and Original Data Points
-plt.subplot(2, 1, 2)
-plt.plot(df['elapsed_time'], df['xg_predictions'], label='XG Predicted Probability (Player 1)', linestyle='dashed', color='salmon')
-plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - XG')
-plt.scatter(df['elapsed_time'], df['xg_predictions'], marker='o', s=5, color='blue', label='Predicted Points - XG')  # Blue points at predicted points
-plt.xlabel('Elapsed Time')
-plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
-plt.title('XGBoost - Time Series of Predicted Probability with Scatter Plot')
-plt.legend()
-
-plt.tight_layout()
 plt.show()
 
 
+
+# Random Forest predictions on the test set
+rf_test_predictions = rf_model.predict(test[features])
+
+# Calculate accuracy for Random Forest
+rf_accuracy = accuracy_score(test[target], rf_test_predictions)
+print("Random Forest Accuracy:", rf_accuracy)
+
+# Confusion matrix for Random Forest
+rf_conf_matrix = confusion_matrix(test[target], rf_test_predictions)
+print("Random Forest Confusion Matrix:")
+print(rf_conf_matrix)
+
+# XGBoost predictions on the test set
+xg_test_predictions = xg_model.predict(test[features])
+
+# Calculate accuracy for XGBoost
+xg_accuracy = accuracy_score(test[target], xg_test_predictions)
+print("\nXGBoost Accuracy:", xg_accuracy)
+
+# Confusion matrix for XGBoost
+xg_conf_matrix = confusion_matrix(test[target], xg_test_predictions)
+print("XGBoost Confusion Matrix:")
+print(xg_conf_matrix)
 

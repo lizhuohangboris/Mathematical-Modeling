@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, confusion_matrix
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Load data from '数据处理.csv' with specific columns
@@ -39,10 +41,8 @@ train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 rf_model = RandomForestClassifier(random_state=42)
 rf_model.fit(train[features_rf], train[target])
 
-# ...
-
-# Use Random Forest model for predictions on the entire dataset
-df['rf_predictions'] = rf_model.predict_proba(df[features_rf])[:, 1]
+# Use Random Forest model for predictions on the test dataset
+test['rf_predictions'] = rf_model.predict_proba(test[features_rf])[:, 1]
 
 # Add 'rf_predictions' column to the train dataset
 train['rf_predictions'] = rf_model.predict_proba(train[features_rf])[:, 1]
@@ -51,43 +51,31 @@ train['rf_predictions'] = rf_model.predict_proba(train[features_rf])[:, 1]
 xg_model = XGBClassifier(random_state=42)
 xg_model.fit(train[features_xg], train[target])
 
-# ...
+# Use XGBoost model for predictions on the test dataset
+test['xg_predictions'] = xg_model.predict_proba(test[features_xg])[:, 1]
 
+# Calculate accuracy for Random Forest
+rf_accuracy = accuracy_score(test[target], (test['rf_predictions'] > 0.5).astype(int))
+print("Random Forest Accuracy:", rf_accuracy)
 
-# Use XGBoost model for predictions on the entire dataset
-df['xg_predictions'] = xg_model.predict_proba(df[features_xg])[:, 1]
+# Calculate accuracy for XGBoost
+xg_accuracy = accuracy_score(test[target], (test['xg_predictions'] > 0.5).astype(int))
+print("XGBoost Accuracy:", xg_accuracy)
 
-# Inverse transform 'point_victor' for interpretation
-df['point_victor'] = le.inverse_transform(df['point_victor'])
-
-# Sort DataFrame by 'elapsed_time' for time series plot
-df.sort_values('elapsed_time', inplace=True)
-
-# Plot the time series of predicted probabilities for Random Forest and XGBoost
-plt.figure(figsize=(15, 8))
-
-# Subplot 1: Random Forest Predicted Probability and Original Data Points
-plt.subplot(2, 1, 1)
-plt.plot(df['elapsed_time'], df['rf_predictions'], label='RF Predicted Probability (Player 1)', linestyle='dashed', color='skyblue')
-plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - RF')
-plt.scatter(df['elapsed_time'], df['rf_predictions'], marker='o', s=5, color='blue', label='Predicted Points - RF')  # Blue points at predicted points
-plt.xlabel('Elapsed Time')
-plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
-plt.title('Random Forest - Time Series of Predicted Probability with Scatter Plot')
-plt.legend()
-
-# Subplot 2: XGBoost Predicted Probability and Original Data Points
-plt.subplot(2, 1, 2)
-plt.plot(df['elapsed_time'], df['xg_predictions'], label='XG Predicted Probability (Player 1)', linestyle='dashed', color='salmon')
-plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - XG')
-plt.scatter(df['elapsed_time'], df['xg_predictions'], marker='o', s=5, color='blue', label='Predicted Points - XG')  # Blue points at predicted points
-plt.xlabel('Elapsed Time')
-plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
-plt.title('XGBoost - Time Series of Predicted Probability with Scatter Plot')
-plt.legend()
-
-plt.tight_layout()
+# Confusion matrix for Random Forest
+rf_conf_matrix = confusion_matrix(test[target], (test['rf_predictions'] > 0.5).astype(int))
+plt.figure(figsize=(8, 6))
+sns.heatmap(rf_conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['0', '1'], yticklabels=['0', '1'])
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('Random Forest Confusion Matrix')
 plt.show()
 
-
-
+# Confusion matrix for XGBoost
+xg_conf_matrix = confusion_matrix(test[target], (test['xg_predictions'] > 0.5).astype(int))
+plt.figure(figsize=(8, 6))
+sns.heatmap(xg_conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['0', '1'], yticklabels=['0', '1'])
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('XGBoost Confusion Matrix')
+plt.show()
