@@ -6,18 +6,16 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
-from xgboost import plot_tree
-import numpy as np
-from pingouin import partial_corr
 
-# Load data from '数据处理.csv' with specific columns
-file_path = "c:/Users/92579/Documents/GitHub/Mathematical-Modeling/比赛记录/2024 MCM/美赛/2024_MCM-ICM_Problems/2024_MCM-ICM_Problems/数据处理.csv"
+
+
+file_path = "mypath.csv"
 columns_to_read = ['match_id', 'player1', 'player2', 'elapsed_time', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games',
                    'score_lead', 'Tie_breakers', 'server', 'serve_no', 'point_victor', 'game_victor', 'set_victor',
                    'p1_ace', 'p2_ace', 'p1_winner', 'p2_winner', 'p1_double_fault', 'p2_double_fault', 'p1_unf_err',
                    'p2_unf_err', 'p1_net_pt', 'p2_net_pt', 'p1_net_pt_won', 'p2_net_pt_won', 'p1_break_pt', 'p2_break_pt',
                    'p1_break_pt_won', 'p2_break_pt_won', 'p1_break_pt_missed', 'p2_break_pt_missed', 'p1_distance_run',
-                   'p2_distance_run', 'rally_count', 'Momentum']
+                   'p2_distance_run', 'rally_count']
 df = pd.read_csv(file_path, usecols=columns_to_read)
 
 # Convert 'elapsed_time' to datetime
@@ -50,6 +48,9 @@ xg_model.fit(df[features_xg], df[target])
 # Use XGBoost model for predictions on the entire dataset
 df['xg_predictions'] = xg_model.predict(df[features_xg])
 
+# Inverse transform 'point_victor' for interpretation
+df['point_victor'] = le.inverse_transform(df['point_victor'])
+
 # Calculate accuracy for XGBoost
 xg_accuracy = accuracy_score(df[target], df['xg_predictions'])
 print("XGBoost Accuracy:", xg_accuracy)
@@ -75,6 +76,8 @@ print("XGBoost Accuracy:", xg_accuracy)
 
 # Plot the time series of predicted probabilities for XGBoost
 plt.figure(figsize=(15, 8))
+
+# Subplot 1: XGBoost Predicted Probability and Original Data Points
 plt.plot(df['elapsed_time'], df['xg_probabilities'], label='XGBoost Predicted Probability (Player 1)', linestyle='dashed', color='salmon')
 plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - XG')
 plt.scatter(df['elapsed_time'], df['xg_probabilities'], marker='o', s=5, color='blue', label='Predicted Probabilities - XG')  # Blue points at predicted points
@@ -83,40 +86,5 @@ plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
 plt.title('XGBoost - Time Series of Predicted Probability with Scatter Plot')
 plt.legend()
 
-# Extract relevant columns for correlation analysis
-correlation_columns = ['rf_predictions', 'xg_probabilities']
-
-# Calculate correlation matrix
-correlation_matrix = df[correlation_columns].corr()
-print("Pearson Correlation Coefficients:")
-print(correlation_matrix)
-
-# Calculate Spearman correlation matrix
-spearman_corr_matrix = df[correlation_columns].corr(method='spearman')
-print("Spearman Correlation Coefficients:")
-print(spearman_corr_matrix)
-
-# Visualize correlation matrix using a heatmap
-plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)
-plt.title('Correlation Matrix: Random Forest Predictions vs. XGBoost Probabilities')
-plt.show()
-
-# Partial correlation analysis
-partial_corr_results = partial_corr(df, x='rf_predictions', y='xg_probabilities', covar=None)
-print("Partial Correlation Coefficient:")
-print(partial_corr_results)
-
-# Plot kernel density estimation (KDE) of two variables
-plt.figure(figsize=(10, 8))
-sns.kdeplot(data=df, x='rf_predictions', y='xg_probabilities', cmap='Blues', fill=True)
-plt.title('Kernel Density Estimation (KDE) of Random Forest Predictions and XGBoost Probabilities')
-plt.show()
-
-# Choose the first tree index for XGBoost
-tree_index = 0
-
-# Plot the first tree of XGBoost
-plt.figure(figsize=(20, 10))
-plot_tree(xg_model, num_trees=tree_index, rankdir='LR')
+plt.tight_layout()
 plt.show()

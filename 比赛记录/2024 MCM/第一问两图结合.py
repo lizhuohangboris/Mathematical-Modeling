@@ -38,7 +38,7 @@ rf_model = RandomForestClassifier(random_state=42)
 rf_model.fit(train[features], train[target])
 
 # Use Random Forest model for predictions on the entire dataset
-df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 1]
+df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 0]
 
 # Inverse transform 'point_victor' for interpretation
 df['point_victor'] = le.inverse_transform(df['point_victor'])
@@ -51,7 +51,7 @@ lgb_model = lgb.LGBMClassifier(random_state=42)
 lgb_model.fit(train[features], train[target])
 
 # Use LightGBM model for predictions on the entire dataset
-df['lgb_predictions'] = lgb_model.predict_proba(df[features])[:, 1]
+df['lgb_predictions'] = rf_model.predict_proba(df[features])[:, 1]
 
 # Inverse transform 'point_victor' for interpretation
 df['point_victor'] = le.inverse_transform(df['point_victor'])
@@ -72,6 +72,8 @@ plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='blac
 plt.xlabel('Elapsed Time')
 plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
 plt.title('Visualization of the Momentum in Final Match (RF & LightGBM)')
-plt.legend(bbox_to_anchor=(0.81, 0.9), fontsize='small')
+plt.legend(bbox_to_anchor=(0.84
+
+, 0.8), fontsize='small')
 
 plt.show()

@@ -5,9 +5,9 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 
-# Load data from '数据处理.csv'
-file_path = "c:/Users/92579/Documents/GitHub/Mathematical-Modeling/比赛记录/2024 MCM/美赛/2024_MCM-ICM_Problems/2024_MCM-ICM_Problems/数据处理.csv"
-df = pd.read_csv(file_path)
+# Load data
+file_path = "c:/Users/92579/Documents/GitHub/Mathematical-Modeling/比赛记录/2024 MCM/美赛/2024_MCM-ICM_Problems/2024_MCM-ICM_Problems/de.xlsx"
+df = pd.read_excel(file_path)
 
 # Choose features and target variable
 features = ['elapsed_time', 'set_no', 'game_no', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games']
@@ -17,7 +17,7 @@ target = 'point_victor'
 df['elapsed_time'] = pd.to_timedelta(df['elapsed_time'].astype(str)).dt.total_seconds()
 
 # Process other non-numeric features (dummy encoding)
-df = pd.get_dummies(df, columns=['server', 'serve_no'])
+df = pd.get_dummies(df, columns=['server', 'serve_no', 'winner_shot_type'])
 
 # Encode 'point_victor' column
 le = LabelEncoder()

@@ -66,11 +66,6 @@ plt.ylabel('True')
 plt.title('XGBoost Confusion Matrix')
 plt.show()
 
-
-
-
-# ...
-
 # Use XGBoost model for predictions on the entire dataset
 df['xg_probabilities'] = xg_model.predict_proba(df[features_xg])[:, 1]
 

@@ -34,14 +34,11 @@ train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 
 # Prophet model for time series prediction
 prophet_model = Prophet()
-prophet_model.add_regressor('p1_sets')
-prophet_model.add_regressor('p2_sets')
-prophet_model.add_regressor('p1_games')
-prophet_model.add_regressor('p2_games')
-prophet_model.add_regressor('score_lead')
+for feature in features:
+    prophet_model.add_regressor(feature)
 
 # Rename columns for Prophet
-train_prophet = train[['elapsed_time', 'point_victor', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games', 'score_lead']]
+train_prophet = train[['elapsed_time', 'point_victor'] + features]
 train_prophet = train_prophet.rename(columns={'elapsed_time': 'ds', 'point_victor': 'y'})
 
 # Fit the Prophet model
@@ -52,7 +49,10 @@ future = pd.DataFrame(pd.date_range(start=df['elapsed_time'].min(), end=df['elap
 
 # Add regressor values for the future dataframe
 for feature in features:
-    future[feature] = df[feature].mean()  # Use mean value for regressors in the future
+    if feature == 'yhat':
+        future[feature] = 0  # For 'yhat', you can use a default value or any appropriate strategy
+    else:
+        future[feature] = df[feature].mean()  # Use mean value for other regressors in the future
 
 # Make predictions on the entire dataset
 prophet_predictions = prophet_model.predict(future)
@@ -69,8 +69,6 @@ features.append('yhat')
 # Train XGBoost model on the entire dataset
 xg_model = XGBClassifier(random_state=42)
 xg_model.fit(df[features], df[target])
-
-
 
 # Use XGBoost model for predictions on the entire dataset
 df['xg_predictions'] = xg_model.predict(df[features])
@@ -106,3 +104,9 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+# 获取Prophet模型的季节性组件
+seasonality_columns = [col for col in prophet_predictions.columns if 'seasonal' in col]
+seasonality_components = prophet_predictions[seasonality_columns]
+
+# 注意：这只是演示如何访问季节性组件，实际应用中你可能需要更详细的分析和可视化

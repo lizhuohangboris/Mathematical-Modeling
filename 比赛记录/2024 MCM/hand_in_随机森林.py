@@ -1,19 +1,19 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import lightgbm as lgb
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 
 
-file_path = "mypath.csv"
+file_path = "my_path.csv"
 columns_to_read = ['match_id', 'player1', 'player2', 'elapsed_time', 'p1_sets', 'p2_sets', 'p1_games', 'p2_games',
                    'score_lead', 'Tie_breakers', 'server', 'serve_no', 'point_victor', 'game_victor', 'set_victor',
                    'p1_ace', 'p2_ace', 'p1_winner', 'p2_winner', 'p1_double_fault', 'p2_double_fault', 'p1_unf_err',
                    'p2_unf_err', 'p1_net_pt', 'p2_net_pt', 'p1_net_pt_won', 'p2_net_pt_won', 'p1_break_pt', 'p2_break_pt',
                    'p1_break_pt_won', 'p2_break_pt_won', 'p1_break_pt_missed', 'p2_break_pt_missed', 'p1_distance_run',
                    'p2_distance_run', 'rally_count']
+
 df = pd.read_csv(file_path, usecols=columns_to_read)
 
 # Choose features and target variable
@@ -34,12 +34,12 @@ df[target] = le.fit_transform(df[target])
 train_size = 0.7
 train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 
-# Train LightGBM model on the first 70% of data
-lgb_model = lgb.LGBMClassifier(random_state=42)
-lgb_model.fit(train[features], train[target])
+# Train Random Forest model on the first 70% of data
+rf_model = RandomForestClassifier(random_state=42)
+rf_model.fit(train[features], train[target])
 
-# Use LightGBM model for predictions on the entire dataset
-df['lgb_predictions'] = lgb_model.predict_proba(df[features])[:, 1]
+# Use Random Forest model for predictions on the entire dataset
+df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 1]
 
 # Inverse transform 'point_victor' for interpretation
 df['point_victor'] = le.inverse_transform(df['point_victor'])
@@ -47,35 +47,28 @@ df['point_victor'] = le.inverse_transform(df['point_victor'])
 # Sort DataFrame by 'elapsed_time' for time series plot
 df.sort_values('elapsed_time', inplace=True)
 
-# Plot the time series of predicted probabilities for LightGBM
+# Calculate and print accuracy on training data
+train_predictions = rf_model.predict(train[features])
+train_accuracy = accuracy_score(train[target], train_predictions)
+print(f'Training Accuracy: {train_accuracy:.4f}')
+
+# Calculate and print accuracy on test data
+test_predictions = rf_model.predict(test[features])
+test_accuracy = accuracy_score(test[target], test_predictions)
+print(f'Test Accuracy: {test_accuracy:.4f}')
+
+# Plot the time series of predicted probabilities for Random Forest
 plt.figure(figsize=(10, 6))
-plt.plot(df['elapsed_time'], df['lgb_predictions'], label='LightGBM Predicted Probability', linestyle='-', color='purple')
+plt.plot(df['elapsed_time'], df['rf_predictions'], label='RF Predicted Probability', linestyle='dashed', color='skyblue')
+
+# Scatter plot of 'elapsed_time' with predicted probabilities
+plt.scatter(df['elapsed_time'], df['rf_predictions'], marker='o', s=5, color='blue', label='RF Scatter Plot of Elapsed Time')
 
 # Scatter plot of original 'elapsed_time' with 'point_victor' (0 and 1)
 plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points')
 
 plt.xlabel('Elapsed Time')
 plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
-plt.title('Time Series of Predicted Probability with Scatter Plots (LightGBM)')
+plt.title('Time Series of Predicted Probability with Scatter Plots (Random Forest)')
 plt.legend()
-
-# Calculate and print accuracy on training data
-train_predictions = lgb_model.predict(train[features])
-train_accuracy = accuracy_score(train[target], train_predictions)
-print(f'Training Accuracy: {train_accuracy:.4f}')
-
-# Calculate and print accuracy on test data
-test_predictions = lgb_model.predict(test[features])
-test_accuracy = accuracy_score(test[target], test_predictions)
-print(f'Test Accuracy: {test_accuracy:.4f}')
-
 plt.show()
-
-conf_matrix_train = confusion_matrix(train[target], train_predictions)
-conf_matrix_test = confusion_matrix(test[target], test_predictions)
-
-print("Confusion Matrix - Training Data:")
-print(conf_matrix_train)
-
-print("\nConfusion Matrix - Test Data:")
-print(conf_matrix_test)

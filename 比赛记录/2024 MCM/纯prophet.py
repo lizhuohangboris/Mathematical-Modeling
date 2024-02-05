@@ -40,3 +40,15 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+# 获取Prophet模型的中间量
+components = prophet_model.predict(future)
+trend_component = components['trend']
+seasonal_component = components['yearly']
+
+# 输出趋势和季节性中间量
+print("Trend Component:")
+print(trend_component.head())
+
+print("\nSeasonal Component:")
+print(seasonal_component.head())

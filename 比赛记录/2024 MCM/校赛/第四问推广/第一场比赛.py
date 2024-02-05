@@ -7,8 +7,11 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 from xgboost import plot_tree
+import scikitplot as skplt
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import learning_curve
 import numpy as np
-from pingouin import partial_corr
+
 
 # Load data from '数据处理.csv' with specific columns
 file_path = "c:/Users/92579/Documents/GitHub/Mathematical-Modeling/比赛记录/2024 MCM/美赛/2024_MCM-ICM_Problems/2024_MCM-ICM_Problems/数据处理.csv"
@@ -17,7 +20,7 @@ columns_to_read = ['match_id', 'player1', 'player2', 'elapsed_time', 'p1_sets', 
                    'p1_ace', 'p2_ace', 'p1_winner', 'p2_winner', 'p1_double_fault', 'p2_double_fault', 'p1_unf_err',
                    'p2_unf_err', 'p1_net_pt', 'p2_net_pt', 'p1_net_pt_won', 'p2_net_pt_won', 'p1_break_pt', 'p2_break_pt',
                    'p1_break_pt_won', 'p2_break_pt_won', 'p1_break_pt_missed', 'p2_break_pt_missed', 'p1_distance_run',
-                   'p2_distance_run', 'rally_count', 'Momentum']
+                   'p2_distance_run', 'rally_count']
 df = pd.read_csv(file_path, usecols=columns_to_read)
 
 # Convert 'elapsed_time' to datetime
@@ -50,6 +53,9 @@ xg_model.fit(df[features_xg], df[target])
 # Use XGBoost model for predictions on the entire dataset
 df['xg_predictions'] = xg_model.predict(df[features_xg])
 
+# Inverse transform 'point_victor' for interpretation
+df['point_victor'] = le.inverse_transform(df['point_victor'])
+
 # Calculate accuracy for XGBoost
 xg_accuracy = accuracy_score(df[target], df['xg_predictions'])
 print("XGBoost Accuracy:", xg_accuracy)
@@ -60,7 +66,7 @@ plt.figure(figsize=(8, 6))
 sns.heatmap(xg_conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['0', '1'], yticklabels=['0', '1'])
 plt.xlabel('Predicted')
 plt.ylabel('True')
-plt.title('XGBoost Confusion Matrix')
+plt.title('Confusion Matrix')
 plt.show()
 
 # Use XGBoost model for predictions on the entire dataset
@@ -75,6 +81,8 @@ print("XGBoost Accuracy:", xg_accuracy)
 
 # Plot the time series of predicted probabilities for XGBoost
 plt.figure(figsize=(15, 8))
+
+# Subplot 1: XGBoost Predicted Probability and Original Data Points
 plt.plot(df['elapsed_time'], df['xg_probabilities'], label='XGBoost Predicted Probability (Player 1)', linestyle='dashed', color='salmon')
 plt.scatter(df['elapsed_time'], df['point_victor'], marker='o', s=5, color='black', label='Original Data Points - XG')
 plt.scatter(df['elapsed_time'], df['xg_probabilities'], marker='o', s=5, color='blue', label='Predicted Probabilities - XG')  # Blue points at predicted points
@@ -83,40 +91,48 @@ plt.ylabel('Predicted Probability / Point Victor (0 or 1)')
 plt.title('XGBoost - Time Series of Predicted Probability with Scatter Plot')
 plt.legend()
 
-# Extract relevant columns for correlation analysis
-correlation_columns = ['rf_predictions', 'xg_probabilities']
+plt.tight_layout()
+plt.show()
 
-# Calculate correlation matrix
-correlation_matrix = df[correlation_columns].corr()
-print("Pearson Correlation Coefficients:")
-print(correlation_matrix)
+# # 选择第一棵树
+# tree_index = 0
 
-# Calculate Spearman correlation matrix
-spearman_corr_matrix = df[correlation_columns].corr(method='spearman')
-print("Spearman Correlation Coefficients:")
-print(spearman_corr_matrix)
+# # 绘制生成数图
+# plt.figure(figsize=(20, 10))
+# plot_tree(xg_model, num_trees=tree_index, rankdir='LR')
+# plt.show()
 
-# Visualize correlation matrix using a heatmap
+
+
+
+# ROC Curve for XGBoost
+xg_fpr, xg_tpr, _ = roc_curve(df[target], df['xg_probabilities'])
+xg_roc_auc = auc(xg_fpr, xg_tpr)
+
 plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)
-plt.title('Correlation Matrix: Random Forest Predictions vs. XGBoost Probabilities')
+plt.plot(xg_fpr, xg_tpr, color='darkorange', lw=2, label='XGBoost ROC curve (area = {:.2f})'.format(xg_roc_auc))
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.legend(loc="lower right")
 plt.show()
 
-# Partial correlation analysis
-partial_corr_results = partial_corr(df, x='rf_predictions', y='xg_probabilities', covar=None)
-print("Partial Correlation Coefficient:")
-print(partial_corr_results)
+# Learning Curve for XGBoost
+train_sizes, train_scores, test_scores = learning_curve(xg_model, df[features_xg], df[target], cv=5, scoring='accuracy', n_jobs=-1)
 
-# Plot kernel density estimation (KDE) of two variables
-plt.figure(figsize=(10, 8))
-sns.kdeplot(data=df, x='rf_predictions', y='xg_probabilities', cmap='Blues', fill=True)
-plt.title('Kernel Density Estimation (KDE) of Random Forest Predictions and XGBoost Probabilities')
-plt.show()
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
 
-# Choose the first tree index for XGBoost
-tree_index = 0
-
-# Plot the first tree of XGBoost
-plt.figure(figsize=(20, 10))
-plot_tree(xg_model, num_trees=tree_index, rankdir='LR')
+plt.figure(figsize=(8, 6))
+plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="r")
+plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="g")
+plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training score")
+plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Cross-validation score")
+plt.xlabel('Training examples')
+plt.ylabel('Score')
+plt.title('Learning Curve')
+plt.legend(loc="best")
 plt.show()
