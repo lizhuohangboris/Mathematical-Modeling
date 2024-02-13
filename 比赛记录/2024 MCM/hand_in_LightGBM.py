@@ -12,12 +12,12 @@ df[target] = le.fit_transform(df[target])
 train_size = 0.7
 train, test = train_test_split(df, test_size=1 - train_size, random_state=42)
 
-# Train Random Forest model on the first 70% of data
-rf_model = RandomForestClassifier(random_state=42)
-rf_model.fit(train[features], train[target])
+# Train LightGBM model on the first 70% of data
+lgb_model = lgb.LGBMClassifier(random_state=42)
+lgb_model.fit(train[features], train[target])
 
-# Use Random Forest model for predictions on the entire dataset
-df['rf_predictions'] = rf_model.predict_proba(df[features])[:, 1]
+# Use LightGBM model for predictions on the entire dataset
+df['lgb_predictions'] = lgb_model.predict_proba(df[features])[:, 1]
 
 # Inverse transform 'point_victor' for interpretation
 df['point_victor'] = le.inverse_transform(df['point_victor'])

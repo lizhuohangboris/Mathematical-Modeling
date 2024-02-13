@@ -34,7 +34,3 @@ plt.ylabel("Features")
 
 # 显示图形
 plt.show()
-plt.figure(figsize=(12, 8))
-sns.violinplot(x=df['point_victorr'], y=df['feature_of_interest'], palette="viridis")
-plt.title("Violin Plot of Feature Distribution by point_victorr")
-plt.show()
