@@ -1,7 +1,11 @@
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
-from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+
+# 设置中文字体
+font = FontProperties(fname=r"C:/Windows/Fonts/simsun.ttc", size=12)
 
 # 从Excel文件中读取数据
 data = pd.read_excel('D:/Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 统计建模/天津空气质量指数月统计历史数据2013.12-2024.5.xlsx')
@@ -27,6 +31,11 @@ for t in range(len(test)):
     history.append(obs)
     print('预测=%f, 实际=%f' % (yhat, obs))
 
-# 评估预测准确性
-error = mean_squared_error(test['AQI'], predictions)
-print('测试集均方误差: %.3f' % error)
+# 绘制预测结果图表
+plt.plot(test.index, test['AQI'], color='#4682B4', label='实际值')  # 浅蓝色
+plt.plot(test.index, predictions, color='#FF6347', label='预测值')  # 浅红色
+plt.xlabel('日期', fontproperties=font)
+plt.ylabel('AQI', fontproperties=font)
+plt.title('ARIMA模型预测结果', fontproperties=font)
+plt.legend(prop=font)
+plt.show()
