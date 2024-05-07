@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 # 读取数据
-data = pd.read_excel("D:/Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 统计建模/天津月统计历史数据2013.12-2024.5 - 完整版.xlsx")
+data = pd.read_excel("D:/Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 统计建模/tianjinproceed.xlsx")
 
 # 将"Month"列转换为日期类型
 data['Month'] = pd.to_datetime(data['Month'], format='%b-%y')
