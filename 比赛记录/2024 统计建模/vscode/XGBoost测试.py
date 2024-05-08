@@ -2,6 +2,7 @@ import pandas as pd
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体为黑体
 
 # 读取数据
 data = pd.read_excel("D:/Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 统计建模/随机森林.xlsx")
@@ -40,8 +41,8 @@ print("Test R^2 Score:", test_score)
 plt.scatter(y_train, y_train_pred, color='blue', label='Train')
 plt.scatter(y_test, y_test_pred, color='red', label='Test')
 plt.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
-plt.xlabel('True AQI')
-plt.ylabel('Predicted AQI')
-plt.title('True AQI vs Predicted AQI')
+plt.xlabel('真实AQI')
+plt.ylabel('预测AQI')
+plt.title('[ XGBoost ] 真实AQI vs 预测AQI')
 plt.legend()
 plt.show()
