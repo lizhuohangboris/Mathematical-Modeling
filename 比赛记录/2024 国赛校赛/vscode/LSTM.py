@@ -6,7 +6,7 @@ from keras.layers import LSTM, Dense
 
 # Load data
 training_data_path = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问训练数据.xlsx'
-prediction_data_path = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问.xlsx'
+prediction_data_path = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问2.xlsx'
 
 training_data = pd.read_excel(training_data_path)
 prediction_data = pd.read_excel(prediction_data_path)
@@ -72,8 +72,21 @@ future_predict = target_scaler.inverse_transform(future_predict)
 prediction_data['二氧化碳排放量（百万吨）'] = np.nan
 prediction_data.iloc[-len(future_predict):, prediction_data.columns.get_loc('二氧化碳排放量（百万吨）')] = future_predict.flatten()
 
-# Save the results to a new Excel file
-output_path_lstm = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问预测结果_LSTM.xlsx'
-prediction_data.to_excel(output_path_lstm, index=False)
+# # Save the results to a new Excel file
+# output_path_lstm = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问预测结果_LSTM2.xlsx'
+# prediction_data.to_excel(output_path_lstm, index=False)
 
-output_path_lstm
+# output_path_lstm
+
+# 训练数据上的预测
+train_predict = model.predict(X_train)
+train_predict = target_scaler.inverse_transform(train_predict)
+actual_train_target = target_scaler.inverse_transform(y_train.reshape(-1, 1))
+
+# 将预测值和实际值保存到DataFrame
+comparison_df = pd.DataFrame({
+    '实际值': actual_train_target.flatten(),
+    '预测值': train_predict.flatten()
+})
+print("训练数据上的预测值与实际值对比：")
+print(comparison_df.head())
