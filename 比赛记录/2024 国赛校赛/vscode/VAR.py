@@ -46,6 +46,12 @@ forecast_df = pd.DataFrame(forecast, index=range(data.shape[0], data.shape[0]+38
 # 输出预测结果
 print(forecast_df)
 
+# 保存预测结果为Excel文件
+output_path = 'forecast_results.xlsx'
+forecast_df.to_excel(output_path, index=False)
+print(f'预测结果已保存为 {output_path}')
+
+
 # # 绘制可视化结果
 # plt.figure(figsize=(10, 6))
 # for col in data.columns[1:]:
