@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # 读取Excel文件
-file_path = r'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/数据(1).xlsx'
+file_path = r'D://课程/比赛/数学建模/Mathematical-Modeling/比赛记录/2024 国赛校赛/数据(1).xlsx'
 df = pd.read_excel(file_path)
 
 # 转置数据框

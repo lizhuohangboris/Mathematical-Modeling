@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
 # 加载Excel文件
-file_path = 'D://Normal_tools/Github_desktop/Clone_shop/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问.xlsx'
+file_path = 'D://课程/比赛/数学建模/Mathematical-Modeling/比赛记录/2024 国赛校赛/第二问.xlsx'
 data = pd.read_excel(file_path, sheet_name='Sheet1')
 
 # 处理缺失值，通过线性插值填补
@@ -17,7 +17,7 @@ data.interpolate(method='linear', inplace=True)
 data.fillna(data.mean(), inplace=True)
 
 # 准备训练数据，自变量包括多个特征
-X = data[['年份', 'GDP（十亿）', '人口（百万人）', '钢铁产量（千吨）', '水泥（百万吨）', '民用汽车数量（千辆）',
+X = data[['年份', 'GDP(十亿)', '人口（百万人）', '钢铁产量（千吨）', '水泥（百万吨）', '民用汽车数量（千辆）',
           '煤炭消耗量（百万吨）', '原油消耗量', '天然气消耗量', '新能源消耗量']]
 y = data['二氧化碳排放量（百万吨）']
 
