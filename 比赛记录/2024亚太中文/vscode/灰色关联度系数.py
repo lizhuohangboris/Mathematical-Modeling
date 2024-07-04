@@ -18,6 +18,7 @@ def read_data(file_path, encoding='gbk'):
 
 # 归一化处理
 def normalize_data(data):
+    data = data.drop(columns=['id'], errors='ignore')
     numeric_data = data.select_dtypes(include=[np.number])
     data_normalized = (numeric_data - numeric_data.min()) / (numeric_data.max() - numeric_data.min())
     return data_normalized
@@ -38,7 +39,7 @@ def grey_relational_degree(data_normalized, reference_column):
 
 # 主程序
 def main():
-    file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024亚太中文\train.csv'
+    file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024亚太中文\train（箱形图法进行数据预处理）.csv'
     data = read_data(file_path)
     
     if data is not None:
@@ -54,17 +55,17 @@ def main():
         print(correlation_matrix)
         
         # 设置字体属性
-        font_properties = FontProperties(fname=r'C:\Windows\Fonts\simhei.ttf', size=8)  # 使用适当的中文字体路径
+        font_properties = FontProperties(fname=r'C:\Windows\Fonts\simhei.ttf', size=9.5)  # 使用适当的中文字体路径
         
         # 设置绘图区域大小
         plt.figure(figsize=(16, 12))
         
         # 绘制热力图
         sns.heatmap(correlation_matrix.T, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5,
-                    annot_kws={"size": 8, "fontproperties": font_properties})
+                    annot_kws={"size": 14, "fontproperties": font_properties})
         
         # 设置热力图标题
-        plt.title('灰色关联度矩阵热力图', fontproperties=font_properties, size=16)
+        plt.title('灰色关联度矩阵热力图', fontproperties=font_properties, size=20)
         
         # 调整刻度标签的字体属性
         plt.xticks(fontproperties=font_properties)
