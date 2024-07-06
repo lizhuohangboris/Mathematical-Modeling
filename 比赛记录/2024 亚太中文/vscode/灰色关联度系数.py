@@ -39,7 +39,7 @@ def grey_relational_degree(data_normalized, reference_column):
 
 # 主程序
 def main():
-    file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\train（箱形图法进行数据预处理）.csv'
+    file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\train.csv'
     data = read_data(file_path)
     
     if data is not None:

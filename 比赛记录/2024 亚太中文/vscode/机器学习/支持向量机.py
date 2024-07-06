@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 
 # 确认文件路径正确无误
-file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\第二问.csv'
+file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\五个变量的数据.csv'
 
 # 加载数据，尝试使用逗号作为分隔符
 data = pd.read_csv(file_path, delimiter=',', encoding='gbk')

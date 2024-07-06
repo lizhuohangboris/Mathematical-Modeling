@@ -33,3 +33,12 @@ r2 = r2_score(y_test, y_pred)
 print(f'Mean Squared Error: {mse}')
 print(f'R2 Score: {r2}')
 
+# 输出回归方程
+intercept = model.intercept_
+coefficients = model.coef_
+
+print("回归方程:")
+print(f"洪水概率 = {intercept:.4f}", end=' ')
+for i, col in enumerate(X.columns):
+    print(f"+ ({coefficients[i]:.4f} * {col})", end=' ')
+print()
