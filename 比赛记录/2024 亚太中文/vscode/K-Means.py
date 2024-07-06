@@ -5,7 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_selection import mutual_info_classif
 
 # 读取CSV文件，指定编码为'gbk'
-file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024亚太中文\train.csv'
+file_path = r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\去掉id.csv'
 data = pd.read_csv(file_path, encoding='gbk')
 
 # 数据预处理：归一化处理
