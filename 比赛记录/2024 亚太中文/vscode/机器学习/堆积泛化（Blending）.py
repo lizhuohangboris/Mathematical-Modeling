@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 # 读取数据集
-data = pd.read_csv(r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\第二问.csv', encoding='gbk')
+data = pd.read_csv(r'D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 亚太中文\五个变量的数据.csv', encoding='gbk')
 
 # 分离特征和标签
 X = data.iloc[:, :-1]
