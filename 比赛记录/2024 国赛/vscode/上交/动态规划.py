@@ -1,14 +1,14 @@
 import itertools
 
 # Define parameters (based on the provided table)
-component_defect_rates = [0.1154, 0.1154, 0.1154, 0.1154, 0.1154, 0.1154, 0.1154, 0.1154]  # Defect rates for components
+component_defect_rates = [0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10]  # Defect rates for components
 component_purchase_costs = [2, 8, 12, 2, 8, 12, 8, 12]  # Purchase costs for components
 component_detection_costs = [1, 1, 2, 1, 1, 2, 1, 2]  # Detection costs for components
-semi_product_defect_rates = [0.1154, 0.1154, 0.1154]  # Defect rates for semi-finished products
+semi_product_defect_rates = [0.10, 0.10, 0.10]  # Defect rates for semi-finished products
 semi_product_assembly_costs = [8, 8, 8]  # Assembly costs for semi-finished products
 semi_product_detection_costs = [4, 4, 4]  # Detection costs for semi-finished products
 semi_product_disassembly_costs = [6, 6, 6]  # Disassembly costs for semi-finished products
-product_defect_rate = 0.1154  # Defect rate for finished product
+product_defect_rate = 0.10  # Defect rate for finished product
 product_assembly_cost = 8  # Assembly cost for finished product
 product_detection_cost = 10  # Detection cost for finished product
 product_market_value = 200  # Market value for finished product

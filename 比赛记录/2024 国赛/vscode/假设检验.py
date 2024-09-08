@@ -61,3 +61,5 @@ result_90 = binomial_test(sample_size_90, detected_defective_items, defective_ra
 
 print(f"95% 置信水平结果: {result_95}")
 print(f"90% 置信水平结果: {result_90}")
+
+
