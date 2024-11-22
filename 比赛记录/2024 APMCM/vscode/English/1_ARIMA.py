@@ -75,7 +75,7 @@ for col in dependent_variables:
 
 plt.xlabel("Year", fontsize=14)
 plt.ylabel("Value", fontsize=14)
-plt.title("Forecast Trends for the Next Three Years", fontsize=16)
+plt.title(" ", fontsize=16)
 plt.legend(fontsize=12)
 plt.grid(True)
 plt.tight_layout()
