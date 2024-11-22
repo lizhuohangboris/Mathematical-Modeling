@@ -81,6 +81,34 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+# 输出每个模型的相关信息
+print("\nModel Summary and Diagnostics:")
+for col in dependent_variables:
+    series = data[col]
+    if adfuller(series)[1] > 0.05:  # 检查是否平稳，若非平稳则差分
+        series_diff = series.diff().dropna()
+    else:
+        series_diff = series
+
+    # 拟合 ARIMA 模型
+    model = ARIMA(series_diff, order=(1, 1, 0))
+    fitted_model = model.fit()
+
+    # 打印模型信息
+    print(f"\nVariable: {col}")
+    print(fitted_model.summary())
+    print("\nDiagnostics:")
+    print(f"AIC: {fitted_model.aic}")
+    print(f"BIC: {fitted_model.bic}")
+    print(f"HQIC: {fitted_model.hqic}")  # Hannan-Quinn 信息准则
+# 检查数据平稳性
+print("Stationarity Check Results:")
+for col in dependent_variables:
+    print(f"Checking stationarity for {col}:")
+    check_stationarity(data[col])
+
+
+
 # Save forecast results
 output_path = r"D:\Normal_tools\Github_desktop\Clone_shop\Mathematical-Modeling\比赛记录\2024 APMCM\数据\ARIMA_Prediction_Result.xlsx"
 predictions.to_excel(output_path, index=False)
