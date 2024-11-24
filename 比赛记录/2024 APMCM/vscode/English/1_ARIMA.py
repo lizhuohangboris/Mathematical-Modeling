@@ -86,7 +86,7 @@ for x, y in zip(predictions["Years"], predictions["Pet Industry Market Size"]):
 # 添加标题和标签
 plt.xlabel("Year", fontsize=14)
 plt.ylabel("Value", fontsize=14)
-plt.title("Forecast Visualization with Mixed Chart Types", fontsize=16)
+plt.title(" ", fontsize=16)
 plt.legend(fontsize=12)
 plt.grid(True)
 plt.tight_layout()
