@@ -66,20 +66,34 @@ print(predictions)
 
 # Visualize forecast results
 plt.figure(figsize=(12, 8))
+
+# 绘制 Cat 和 Dog 的折线图
 for col in dependent_variables:
-    plt.plot(predictions["Years"], predictions[col], marker='o', label=col)
+    if col != "Pet Industry Market Size":  # 对 Cat 和 Dog 使用折线图
+        plt.plot(predictions["Years"], predictions[col], marker='o', label=col)
+        
+        # Annotate data points
+        for x, y in zip(predictions["Years"], predictions[col]):
+            plt.text(x, y, f"{y:.2f}", fontsize=9, ha='center', va='bottom')
 
-    # Annotate data points
-    for x, y in zip(predictions["Years"], predictions[col]):
-        plt.text(x, y, f"{y:.2f}", fontsize=9, ha='center', va='bottom')
+# 绘制 Pet Industry Market Size 的柱状图
+plt.bar(predictions["Years"], predictions["Pet Industry Market Size"], color='skyblue', label="Pet Industry Market Size", alpha=0.7)
 
+# Annotate柱状图上的数据点
+for x, y in zip(predictions["Years"], predictions["Pet Industry Market Size"]):
+    plt.text(x, y, f"{y:.2f}", fontsize=9, ha='center', va='bottom')
+
+# 添加标题和标签
 plt.xlabel("Year", fontsize=14)
 plt.ylabel("Value", fontsize=14)
-plt.title(" ", fontsize=16)
+plt.title("Forecast Visualization with Mixed Chart Types", fontsize=16)
 plt.legend(fontsize=12)
 plt.grid(True)
 plt.tight_layout()
+
+# 展示图形
 plt.show()
+
 
 # 输出每个模型的相关信息
 print("\nModel Summary and Diagnostics:")
