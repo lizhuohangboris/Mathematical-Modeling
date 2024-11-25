@@ -30,6 +30,10 @@ ax1.set_title('China’s Pet Food Production and Export Values (2019-2023)')
 ax1.set_xticks(x)
 ax1.set_xticklabels(years)
 
+# Extend the y-axes slightly
+ax1.set_ylim(0, max(production_values) * 1.1)  # Extend production y-axis by 10%
+ax2.set_ylim(0, max(export_values) * 1.2)     # Extend export y-axis by 20%
+
 # Add data labels on top of the bars
 for bar in bars1:
     yval = bar.get_height()
